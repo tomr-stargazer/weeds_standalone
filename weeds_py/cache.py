@@ -110,8 +110,7 @@ class Cache:
       db_cursor.execute("create table info ("
                     "'version' char(32)"
                     ");")
-      # Note: fucking comma is necessary, otherwise it's not considered a tuple. python is
-      # so retarded sometimes.
+      # Note: comma is necessary, otherwise it's not considered a tuple.
       db_cursor.execute("insert into info values (?);", (version,))
       db_cursor.execute("create trigger syncPartfunc after delete on line "
       "when (select species from line where species = old.species and origin = old.origin and dbsource = old.dbsource) is null "
