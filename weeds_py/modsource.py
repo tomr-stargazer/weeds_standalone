@@ -146,9 +146,7 @@ def Planck_funct(T, freq):
 
 
 def find_freq_step(components, fmin):
-    delta_v = []
-    for c in components:
-        delta_v.append(c.delta_v)
+    delta_v = [c.delta_v for c in components]
     min_delta_v = np.min(np.abs(np.array(delta_v)))
     min_delta_f = min_delta_v * 1e3 / speed_of_light * fmin  # MHz
     model_freq_step = min_delta_f / 10.
