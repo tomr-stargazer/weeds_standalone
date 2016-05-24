@@ -1,16 +1,20 @@
-# modsource.py -- Model the emission of a source at the LTE
-# 
-# This file is part of Weeds.
+"""
+modsource.py -- Model the emission of a source at the LTE
+ 
+This file is part of Weeds.
 
-from numpy import *
+"""
+
 import sys
-#import pyclass
-from consts import *
-import cdms
-from db import blankPartfunc
-from sicparse import OptionParser
 import copy
+
+import numpy as np
 from scipy.interpolate import interp1d
+
+from .consts import *
+from . import cdms
+from .db import blankPartfunc
+from .sicparse import OptionParser
 
 class component:
     pass
@@ -105,7 +109,7 @@ def J(T, freq):
     """
 
     J = planck_constant * freq * 1e6 / boltzmann_constant \
-            / (exp((planck_constant * freq * 1e6) \
+            / (np.exp((planck_constant * freq * 1e6) \
                                / (boltzmann_constant * T)) - 1)
 
     return J
@@ -130,7 +134,7 @@ def Planck_funct(T, freq):
 
     factor = 2.*hh/cc/cc*1e23 # Jy
 
-    bt = factor*freq**3/(exp(hh*freq/kk/T)-1.)
+    bt = factor*freq**3/(np.exp(hh*freq/kk/T)-1.)
 
     return bt
 
@@ -139,7 +143,7 @@ def FindFreqStep(components,fmin):
     delta_v = []
     for c in components:
         delta_v.append(c.delta_v)
-    min_delta_v = min(abs(array(delta_v)))
+    min_delta_v = np.min(np.abs(np.array(delta_v)))
     min_delta_f = min_delta_v * 1e3 / speed_of_light * fmin # MHz
     model_freq_step = min_delta_f / 10.
 
@@ -155,8 +159,8 @@ def getLines(cdmsobject,fmin,fmax,species,origin,energy = -1, einstein=-1):
 def getPartitionfuc(cdmsobject,species,Tex):
     """get partition function, given species name and excitation temperature"""
     t_dummy, part_dummy = cdmsobject.part_function(species,'cdms','cdms')
-    f = interp1d(log(t_dummy),log(part_dummy))
-    return exp(f(log(Tex)))
+    f = interp1d(np.log(t_dummy),np.log(part_dummy))
+    return np.exp(f(np.log(Tex)))
 
 def modsource(components, fmin, fmax, freq_step = None, \
               theta_tel = None, background = 2.7, \
@@ -168,17 +172,17 @@ def modsource(components, fmin, fmax, freq_step = None, \
     if freq_step == None:
         freq_step = FindFreqStep(components,fmin)
 
-    freq = arange(fmin, fmax, freq_step)  
+    freq = np.arange(fmin, fmax, freq_step)  
 
     # Compute the antenna temperature and opacity over the entire
     # frequency range.  See Maret et al. (2010, in prep.) for the
     # formula used.
 
-    tb_grand_tot = zeros(len(freq))  # All components, species and lines
+    tb_grand_tot = np.zeros(len(freq))  # All components, species and lines
     # TSR: I was told that K. Zhang added the `intensity_grand_tot` parameter.
-    intensity_grand_tot = zeros(len(freq)) 
+    intensity_grand_tot = np.zeros(len(freq)) 
     
-    tb_species = zeros((len(freq),len(components)))
+    tb_species = np.zeros((len(freq),len(components)))
     keep_opacity_flag = False
     i = 0
 
@@ -207,21 +211,21 @@ def modsource(components, fmin, fmax, freq_step = None, \
 
             # Compute the total opacity for that species
 
-            tau_tot = zeros(len(freq))
+            tau_tot = np.zeros(len(freq))
             for l in lines:
 
                 # Line profile function
                 freq_off = -c.v_off * 1e3 / speed_of_light * l.frequency # MHz
-                sigma = l.frequency / (speed_of_light * sqrt(8 * log(2))) \
+                sigma = l.frequency / (speed_of_light * np.sqrt(8 * np.log(2))) \
                         * c.delta_v * 1e3 * 1e6 # Hz
-                phi = 1 / (sigma * sqrt(2 * pi)) * exp (-((freq - l.frequency - freq_off) \
+                phi = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp (-((freq - l.frequency - freq_off) \
                                                           * 1e6)**2 / (2 * sigma**2))
 
                 # Line opacity
-                tau = speed_of_light**2 / (8 * pi * (freq * 1e6)**2) * l.einstein_coefficient \
+                tau = speed_of_light**2 / (8 * np.pi * (freq * 1e6)**2) * l.einstein_coefficient \
                       * c.Ntot * 1e4 * l.upper_level.statistical_weight \
-                      * exp(-l.upper_level.energy / c.Tex) \
-                      / partitionfunc * (exp(planck_constant * l.frequency * 1e6 \
+                      * np.exp(-l.upper_level.energy / c.Tex) \
+                      / partitionfunc * (np.exp(planck_constant * l.frequency * 1e6 \
                                                                  / (c.Tex * boltzmann_constant))-1) * phi
 
                 # Opacity at line center
@@ -241,15 +245,15 @@ def modsource(components, fmin, fmax, freq_step = None, \
 
         Tbg = background
         eta_source = c.theta**2 / (theta_tel**2 + c.theta**2)
-        tb_tot = eta_source * (J(c.Tex, freq) - J(Tbg, freq)) * (1 - exp(-tau_tot))
+        tb_tot = eta_source * (J(c.Tex, freq) - J(Tbg, freq)) * (1 - np.exp(-tau_tot))
         
         if not(c.absorption):
             tb_grand_tot = tb_grand_tot + tb_tot
-            solid_angle = pi*c.theta**2/(206265.*206265.)
-            intensity_grand_tot = Planck_funct(c.Tex,freq)*(1.-exp(-tau_tot))*solid_angle+intensity_grand_tot
+            solid_angle = np.pi*c.theta**2/(206265.*206265.)
+            intensity_grand_tot = Planck_funct(c.Tex,freq)*(1.-np.exp(-tau_tot))*solid_angle+intensity_grand_tot
             
         else:
-            tb_grand_tot = tb_grand_tot * exp(-tau_tot) + tb_tot
+            tb_grand_tot = tb_grand_tot * np.exp(-tau_tot) + tb_tot
             
 
         tb_species[:,i] = tb_tot
