@@ -134,6 +134,7 @@ def Planck_funct(T, freq):
 
     return bt
 
+# TSR: I was told that K. Zhang wrote this function.
 def FindFreqStep(components,fmin):
     delta_v = []
     for c in components:
@@ -174,7 +175,8 @@ def modsource(components, fmin, fmax, freq_step = None, \
     # formula used.
 
     tb_grand_tot = zeros(len(freq))  # All components, species and lines
-    intensity_grand_tot = zeros(len(freq))
+    # TSR: I was told that K. Zhang added the `intensity_grand_tot` parameter.
+    intensity_grand_tot = zeros(len(freq)) 
     
     tb_species = zeros((len(freq),len(components)))
     keep_opacity_flag = False
@@ -254,7 +256,7 @@ def modsource(components, fmin, fmax, freq_step = None, \
         i = i+1    
 
         
-        
+    # K. Zhang added this `extra_result` functionality.        
     if extra_result == True:
         return freq, tb_grand_tot,tb_species,tau_tot,intensity_grand_tot
     else:
