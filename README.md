@@ -10,3 +10,8 @@ Notes
 
 K. Zhang said that she had deleted some of the interface code.
 She changed the 'modsource' to output not only brightness temperature but also intensity (in Jy units).
+
+Acknowledgements
+================
+
+Weeds is described in the publication by Maret, Hily-Blant, Pety et al., Astronomy & Astrophysics 526, A47 (2011).
