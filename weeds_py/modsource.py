@@ -203,6 +203,9 @@ def modsource(components, fmin, fmax, freq_step=None,
 
         lines = getLines(cdmsobject, fmin, fmax, c.species, c.origin, -1, -1)
 
+        # Compute the total opacity for that species
+        tau_tot = np.zeros(len(freq))
+
         if len(lines) == 0:
             print "No %s lines found in the frequency range" % (c.species)
             i = i+1
@@ -212,9 +215,6 @@ def modsource(components, fmin, fmax, freq_step=None,
 
             partitionfunc = getPartitionfuc(cdmsobject, c.species, c.Tex)
 
-            # Compute the total opacity for that species
-
-            tau_tot = np.zeros(len(freq))
             for l in lines:
 
                 # Line profile function
