@@ -1,7 +1,7 @@
 import numpy
 import os
 from math import log10
-import cache
+from . import cache
 
 NotFoundError = cache.NotFoundError
 blankPartfunc = cache.blankPartfunc
@@ -41,15 +41,15 @@ class Db:
       """
 
       if not protocol in ["slap", "cdms_post", "jpl_post", "catfile", "local"]:
-         raise ValueError, "Unknown protocol"
+         raise ValueError("Unknown protocol")
       if online:
          if protocol in ["catfile", "local"]:
-            raise ValueError, "Local db or catfile cannot be online"
+            raise ValueError("Local db or catfile cannot be online")
          #else:
             # Should try a request to see whether it is available
       else:
          if not protocol in ["catfile", "local"] and not isDbFile(cache_file):
-            raise ValueError, "Offline cache not available"
+            raise ValueError("Offline cache not available")
 
       class linedb_data_class():
          """

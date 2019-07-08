@@ -4,7 +4,7 @@
 import sqlite3
 import array
 import os
-import line
+from . import line
 from datetime import datetime
 
 origins = ["voparis", "vamdc", "splatalogue", "cdms", "jpl"]
@@ -43,7 +43,7 @@ class Cache:
         if not os.path.isfile(self.db_file):
           # File does not exist. This can happen if the database has
           # been deleted after the USE.
-          raise Exception, "Database file does not exist: "+self.db_file
+          raise Exception("Database file does not exist: "+self.db_file)
 
       return sqlite3.connect(self.db_file)
 
@@ -167,7 +167,7 @@ class Cache:
       t = sqlite3.Binary(array.array('d', temperature).tostring())
       p = sqlite3.Binary(array.array('d', partfunc).tostring())
 
-      query = u'''insert into partfunc values(?,?,?,?,?)'''
+      query = '''insert into partfunc values(?,?,?,?,?)'''
       db_cursor.execute(query, (species, t, p, origin, dbsource))
 
    @staticmethod
@@ -176,7 +176,7 @@ class Cache:
       t = sqlite3.Binary(array.array('d', temperature).tostring())
       p = sqlite3.Binary(array.array('d', partfunc).tostring())
 
-      query = u'''insert or replace into partfunc values(?,?,?,?,?)'''
+      query = '''insert or replace into partfunc values(?,?,?,?,?)'''
       db_cursor.execute(query, (species, t, p, origin, dbsource))
 
    def add_line(self, line, update):
@@ -220,7 +220,7 @@ class Cache:
       for line in lines:
          try:
             f(db_cursor, line)
-         except sqlite3.IntegrityError, error:
+         except sqlite3.IntegrityError as error:
             #print "{}, {}, {}".format(line.species, line.upper_level.quantum_numbers, line.lower_level.quantum_numbers)
 #            pysic.message(pysic.seve.w, "INSERT", "line ({0}, {1}, {2}, {3}) already present, not inserting.".format(line.species, line.dbSource, line.upper_level.energy, line.lower_level.energy))
             # the line already existed, that's fine.
@@ -321,13 +321,13 @@ class Cache:
       fmax = row['fmax']
       db_connect.commit()
       db_cursor.close()
-      print
-      print '****** Database information ******'
-      print '* version:           %12s *' % version
-      print '* minimal frequency: %12s *' % fmin
-      print '* maximal frequency: %12s *' % fmax
-      print '***********************************'
-      print
+      print()
+      print('****** Database information ******')
+      print('* version:           %12s *' % version)
+      print('* minimal frequency: %12s *' % fmin)
+      print('* maximal frequency: %12s *' % fmax)
+      print('***********************************')
+      print()
 
    def remove(self, lines):
       db_connect = self.connect(new=False)
@@ -368,7 +368,7 @@ class Cache:
       elif (type(species) == list):
         lspecies = species
       else:
-        raise Exception, "Unexpected kind of argument: "+repr(species)
+        raise Exception("Unexpected kind of argument: "+repr(species))
 
       db_connect = self.connect(new=False)
       db_connect.row_factory = sqlite3.Row

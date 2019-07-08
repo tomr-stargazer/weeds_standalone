@@ -36,4 +36,4 @@ class level:
 
 if __name__ == "__main__":
    l = line()
-   print l
+   print(l)

@@ -207,11 +207,11 @@ def modsource(components, fmin, fmax, freq_step=None,
         tau_tot = np.zeros(len(freq))
 
         if len(lines) == 0:
-            print "No %s lines found in the frequency range" % (c.species)
+            print(("No %s lines found in the frequency range" % (c.species)))
             i = i+1
             continue
         else:
-            print " %i %s lines found in the frequency range" % (len(lines), c.species)
+            print((" %i %s lines found in the frequency range" % (len(lines), c.species)))
 
             partitionfunc = getPartitionfuc(cdmsobject, c.species, c.Tex)
 

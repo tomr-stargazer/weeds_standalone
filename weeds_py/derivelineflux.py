@@ -1,11 +1,11 @@
 from numpy import *
-from consts import *
+from .consts import *
 from scipy.integrate import simps
-from modsource import J
+from .modsource import J
 from scipy.interpolate import interp1d
 from astropy.io import ascii
-import cdms
-import modsource
+from . import cdms
+from . import modsource
 import scipy.optimize as optimization
 import matplotlib.pyplot as plt
 

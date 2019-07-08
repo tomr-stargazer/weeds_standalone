@@ -1,13 +1,13 @@
 # cdms.py -- linedb implementation for cdms
 
 import os
-import urllib
-import urllib2
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 import math
-import db
-import line
-from consts import *
+from . import db
+from . import line
+from .consts import *
 from datetime import datetime
 
 partfunc_url = "http://www.astro.uni-koeln.de/site/vorhersagen/catalog/partition_function.html"
@@ -58,24 +58,24 @@ class Cdms(db.Db):
 
       try:
 
-         data = urllib.urlencode(form_values)
+         data = urllib.parse.urlencode(form_values)
          bdata = data.encode('utf-8')
-         req = urllib2.Request(self.url, bdata)
-         response = urllib2.urlopen(req, timeout = db.timeout)
+         req = urllib.request.Request(self.url, bdata)
+         response = urllib.request.urlopen(req, timeout = db.timeout)
 
          resp = response.read().decode('utf-8')
-         base_url = urlparse.urlsplit(self.url).scheme + "://" \
-            + urlparse.urlsplit(self.url).netloc
+         base_url = urllib.parse.urlsplit(self.url).scheme + "://" \
+            + urllib.parse.urlsplit(self.url).netloc
          cache_url = base_url \
             + resp.split("\n")[4].split('"')[1]
 
-         req = urllib2.Request(cache_url)
-         response = urllib2.urlopen(req, timeout = db.timeout)
+         req = urllib.request.Request(cache_url)
+         response = urllib.request.urlopen(req, timeout = db.timeout)
 
          #print 'response=',response
 
-      except Exception, error:
-         raise Exception, "Could not connect to database: %s" % error
+      except Exception as error:
+         raise Exception("Could not connect to database: %s" % error)
 
       # Parse the results.
       for l in response.readlines()[10:-1]:
@@ -128,7 +128,7 @@ class Cdms(db.Db):
 
             lines.append(sl)
 
-         except Exception, error:
+         except Exception as error:
 
             # FixMe: Some species have missing entries. Ignore them
             # for the moment.
@@ -165,14 +165,14 @@ class Cdms(db.Db):
         elif (len(species) == 1):
           lspecies = species[0]
         else:
-          raise Exception, "Selection with several species is not available for online CDMS"
+          raise Exception("Selection with several species is not available for online CDMS")
       else:
-        raise Exception, "Unexpected kind of argument: "+repr(species)
+        raise Exception("Unexpected kind of argument: "+repr(species))
 
       if self.online:
          lines = self.__post(fmin, fmax, lspecies, energy, einstein)
       else:
-         raise Exception, "Offline in cdms instance"
+         raise Exception("Offline in cdms instance")
 
       return lines
 
@@ -194,10 +194,10 @@ class Cdms(db.Db):
       global partfuncsCached
 
       if origin.lower() != self.name:  # Case-insensitive
-         raise ValueError, "Got %s, but want cdms as origin for partfunc in cdms" % origin
+         raise ValueError("Got %s, but want cdms as origin for partfunc in cdms" % origin)
 
       if dbsource != self.name:
-         raise ValueError, "Got %s, but want cdms as dbsource for partfunc in cdms" % dbsource
+         raise ValueError("Got %s, but want cdms as dbsource for partfunc in cdms" % dbsource)
 
       temp = [1000., 500., 300., 225., 150., 75., 37.5, 18.75, 9.375]
 
@@ -207,7 +207,7 @@ class Cdms(db.Db):
          # TODO(mpl): shouldn't partfunc_url be .encode()ed as well?
          # -> causes problem with timeout, wtf. will investigate later.
          #f =  urllib2.urlopen(partfunc_url.encode('utf-8'))
-         f =  urllib2.urlopen(partfunc_url)
+         f =  urllib.request.urlopen(partfunc_url)
          partfuncsCached = f.readlines()
          f.close()
 
@@ -226,7 +226,7 @@ class Cdms(db.Db):
             if spec == "":
                continue
             if spec == species[7:].strip():
-               print 'partition function found'
+               print('partition function found')
                field = l[40:].split()
                for i in range(len(temp)):
                   if field[i] == "---":
@@ -237,7 +237,7 @@ class Cdms(db.Db):
             continue
 
       if partition_function == []:
-         raise db.NotFoundError, "No partition function found for %s." % species
+         raise db.NotFoundError("No partition function found for %s." % species)
 
       return temperature, partition_function
 
