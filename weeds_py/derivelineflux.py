@@ -71,7 +71,7 @@ def NtotTexFittingFunc(data,species_ind=48501,species = '048501 SO, v=0',\
     ef   = data['col11'][ind]
     
     # spectral information and partition function
-    cdmsobject= cdms.Cdms(url = "http://www.astro.uni-koeln.de/cgi-bin/cdmssearch",
+    cdmsobject= cdms.Cdms(url = "https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch",
           cache_file = "~/.gag/scratch/cdms.db", protocol = "cdms_post",
           online = True, name = "cdms")
     part = cdmsobject.part_function(species,'cdms','cdms')

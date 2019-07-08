@@ -10,7 +10,7 @@ from . import line
 from .consts import *
 from datetime import datetime
 
-partfunc_url = "http://www.astro.uni-koeln.de/site/vorhersagen/catalog/partition_function.html"
+partfunc_url = "https://cdms.astro.uni-koeln.de/classic/entries/partition_function.html"
 maxFreqGHz = 2000
 
 class Cdms(db.Db):
@@ -241,6 +241,6 @@ class Cdms(db.Db):
 
       return temperature, partition_function
 
-default = Cdms(url = "http://www.astro.uni-koeln.de/cgi-bin/cdmssearch",
+default = Cdms(url = "https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch",
           cache_file = "~/.gag/scratch/cdms.db", protocol = "cdms_post",
           online = True, name = "cdms")

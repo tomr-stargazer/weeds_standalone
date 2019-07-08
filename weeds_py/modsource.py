@@ -194,7 +194,7 @@ def modsource(components, fmin, fmax, freq_step=None,
 
     # a cdms object
 
-    cdmsobject = cdms.Cdms(url="http://www.astro.uni-koeln.de/cgi-bin/cdmssearch",
+    cdmsobject = cdms.Cdms(url="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch",
                            cache_file="~/.gag/scratch/cdms.db", protocol="cdms_post",
                            online=True, name="cdms")
 
